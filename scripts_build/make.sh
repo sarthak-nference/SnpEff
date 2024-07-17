@@ -10,11 +10,11 @@ export VERSION_UND=`echo $VERSION | tr '.' '_'`
 # Build SnpEff
 #---
 
-cd $HOME/workspace/SnpEff/
+cd /code/SnpEff/
 
 mvn clean compile assembly:single jar:jar
 
-cp target/SnpEff-$VERSION-jar-with-dependencies.jar $HOME/snpEff/snpEff.jar
+cp target/SnpEff-$VERSION-jar-with-dependencies.jar /code/SnpEff/snpEff.jar
 
 # Install JAR file in local Maven repo
 mvn install:install-file \
@@ -28,30 +28,5 @@ mvn install:install-file \
 
 cd - 
 
-#---
-# Build SnpSift
-#---
-cd $HOME/workspace/SnpSift/
-
-mvn clean compile assembly:single jar:jar
-
-cp target/SnpSift-$VERSION-jar-with-dependencies.jar $HOME/snpEff/SnpSift.jar
-
-# Install JAR file in local Maven repo
-mvn install:install-file \
-	-Dfile=target/SnpSift-$VERSION.jar \
-	-DgroupId=org.snpsift \
-	-DartifactId=SnpSift \
-	-Dversion=$VERSION \
-	-Dpackaging=jar \
-	-DgeneratePom=true \
-	--quiet
-
-cd - 
-
-#---
-# Update galaxy databases
-#---
-./scripts_build/galaxy.sh
 
 echo "Build done!"
