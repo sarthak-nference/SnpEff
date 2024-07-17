@@ -1,5 +1,5 @@
 # Use the specified base image
-FROM hz-registry.nferx.com/ubuntu as builder
+FROM hz-registry.nferx.com/ubuntu as worker
 
 # Set the working directory in the container
 WORKDIR /usr/src/app
