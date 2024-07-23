@@ -13,6 +13,7 @@ RUN apt-get update && \
     git \
     build-essential \
     libtool \
+    maven  \
     zlib1g-dev \
     liblzma-dev \
     git-lfs && \
@@ -24,18 +25,24 @@ RUN python3 -m venv venv && \
     pip install --upgrade pip setuptools wheel && \
     pip install Flask pandas && \
     pip cache purge && \
-    ln -s /usr/bin/python3 /usr/bin/python &&\
+    ln -s /usr/bin/python3 /usr/bin/python && \
     git lfs install
 
-# Copy the application files
-COPY . SnpEff/
 
-# Build the GATK jar file
-RUN cd SnpEff/scripts_build && \
+# Copy the entire SnpEff directory into the container
+COPY . /usr/src/app/SnpEff/
+# Ensure script_build directory exists and has necessary permissions
+RUN /bin/sh -c 'echo "Current working directory is: $(pwd)"'
+# Build the SnpEff jar file
+RUN cd SnpEff && \
+    cd scripts_build && \
     ./make.sh && \
     cd .. && \
-    mv SnpEff/snpEff.jar /usr/src/app/snpEff.jar && \
-    mv SnpEff/snpEff.config /usr/src/app/snpEff.config && \
-    cd .. && \
-    rm -rf SnpEff/ && \
-    apt-get remove -y git-lfs
+    mv snpEff.jar /usr/src/app/snpEff.jar && \
+    mv config/snpEff.config /usr/src/app/snpEff.config && \
+    mv config/data/GRCh38.86 /usr/src/app/GRCh38.86
+# Clean up unnecessary packages
+RUN apt-get remove -y git-lfs && \
+    apt-get autoremove -y && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
